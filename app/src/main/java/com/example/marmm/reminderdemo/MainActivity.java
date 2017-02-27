@@ -51,8 +51,10 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                 Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-                intent.putExtra(INTENT_DETAIL_ROW_NUMBER, i);
-                intent.putExtra(INTENT_DETAIL_REMINDER_TEXT, ((Reminder) adapterView.getItemAtPosition(i)).getmReminderText());
+
+                intent.putExtra(INTENT_DETAIL_ROW_NUMBER, l);
+                Cursor c = (Cursor) mAdapter.getItem(i);
+                intent.putExtra(INTENT_DETAIL_REMINDER_TEXT, c.getString(c.getColumnIndex(DBHelper.REMINDER_NAME)));
                 startActivityForResult(intent, REQUESTCODE);
 
             }
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mReminders.remove(i);
+                mDataSource.deleteReminder(l);
                 updateUI();
                 return true;
             }
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         if (id == R.id.action_delete) {
-            mReminders.clear();
+            mDataSource.deleteAllReminders();
             updateUI();
             return true;
         }
@@ -120,17 +122,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUESTCODE) {
             if (resultCode == RESULT_OK) {
-                int positionOfReminder = data.getIntExtra(INTENT_DETAIL_ROW_NUMBER, -1);
-                //-1 being the default value in case of failure. Can be used to detect an issue.
-
-                Reminder updatedReminder = new Reminder(data.getStringExtra(INTENT_DETAIL_REMINDER_TEXT));
-                // New timestamp: timestamp of update
-
-                mReminders.set(positionOfReminder, updatedReminder);
+                mDataSource.open();
+                //mReminders.set(data.getIntExtra(DetailActivity.UPDATEPOSITION, -1), new Reminder(data.getStringExtra(DetailActivity.UPDATEREMINDER)));
+                mDataSource.updateReminder(data.getLongExtra(INTENT_DETAIL_ROW_NUMBER, 1), data.getStringExtra(INTENT_DETAIL_REMINDER_TEXT));
                 updateUI();
             }
         }

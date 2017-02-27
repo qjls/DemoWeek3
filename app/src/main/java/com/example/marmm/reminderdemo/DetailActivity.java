@@ -13,7 +13,7 @@ public class DetailActivity extends AppCompatActivity {
 
 
     private EditText mReminderView;
-    private int mPosInArray;
+    private Long mPosInArray;
 
 
     @Override
@@ -27,7 +27,7 @@ public class DetailActivity extends AppCompatActivity {
         mReminderView = (EditText) findViewById(R.id.detail_et);
 
         mReminderView.setText(getIntent().getStringExtra(MainActivity.INTENT_DETAIL_REMINDER_TEXT));
-        mPosInArray = getIntent().getIntExtra(MainActivity.INTENT_DETAIL_ROW_NUMBER, -1);
+        mPosInArray = getIntent().getLongExtra(MainActivity.INTENT_DETAIL_ROW_NUMBER, -1);
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);

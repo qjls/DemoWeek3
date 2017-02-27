@@ -57,7 +57,7 @@ public class DataSource {
     }
 
     public void deleteAllReminders() {
-        mDatabase.execSQL("DELETE FROM " + DBHelper.TABLE_REMINDERS + ";");
+        mDatabase.delete(DBHelper.TABLE_REMINDERS, null, null);
 
     }
 
