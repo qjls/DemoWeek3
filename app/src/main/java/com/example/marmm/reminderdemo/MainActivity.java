@@ -1,6 +1,7 @@
 package com.example.marmm.reminderdemo;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,7 +24,9 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUESTCODE = 2;
     private ListView mListView;
     private EditText mEditText;
-    private ReminderAdapter mAdapter;
+    private ReminderCursorAdapter mAdapter;
+    private Cursor mCursor;
+    private DataSource mDataSource;
     private List<Reminder> mReminders;
 
     @Override
@@ -37,7 +39,10 @@ public class MainActivity extends AppCompatActivity {
         mListView = (ListView) findViewById(R.id.listView);
         mEditText = (EditText) findViewById(R.id.editText);
 
-        mReminders = new ArrayList<Reminder>();
+        mDataSource = new DataSource(this);
+        mDataSource.open();
+
+        //mReminders = new ArrayList<Reminder>();
         updateUI();
 
 
@@ -45,11 +50,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                Reminder clickedReminder = (Reminder) adapterView.getItemAtPosition(i);
-
                 Intent intent = new Intent(MainActivity.this, DetailActivity.class);
                 intent.putExtra(INTENT_DETAIL_ROW_NUMBER, i);
-                intent.putExtra(INTENT_DETAIL_REMINDER_TEXT, clickedReminder.getmReminderText());
+                intent.putExtra(INTENT_DETAIL_REMINDER_TEXT, ((Reminder) adapterView.getItemAtPosition(i)).getmReminderText());
                 startActivityForResult(intent, REQUESTCODE);
 
             }
@@ -70,7 +73,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mReminders.add(new Reminder(mEditText.getText().toString()));
+
+                mDataSource.createReminder(new Reminder(mEditText.getText().toString()));
                 updateUI();
                 Snackbar.make(view, "Reminder added", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
@@ -79,11 +83,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUI() {
+        mCursor = mDataSource.getAllReminders();
         if (mAdapter == null) {
-            mAdapter = new ReminderAdapter(this, R.layout.reminder_row_layout, mReminders);
+            mAdapter = new ReminderCursorAdapter(this, mCursor);
             mListView.setAdapter(mAdapter);
         } else {
-            mAdapter.notifyDataSetChanged();
+            mAdapter.changeCursor(mCursor);
         }
     }
 

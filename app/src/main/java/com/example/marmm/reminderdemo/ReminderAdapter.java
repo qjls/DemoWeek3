@@ -32,28 +32,41 @@ public class ReminderAdapter extends ArrayAdapter<Reminder> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         View row = convertView;
+        ReminderHolder holder = null;
 
         if (row == null) {
 
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
-        }
 
-        //Retrieve all Views of a Reminder
-        TextView reminder = (TextView) row.findViewById(R.id.reminderText);
-        TextView timeStamp = (TextView) row.findViewById(R.id.reminderTimeStamp);
+            holder = new ReminderHolder();
+            holder.reminder = (TextView) row.findViewById(R.id.reminderText);
+            holder.timeStamp = (TextView) row.findViewById(R.id.reminderTimeStamp);
+
+            row.setTag(holder);
+
+        } else {
+            holder = (ReminderHolder) row.getTag();
+        }
 
 
         //Retrieve Reminder at the position
         Reminder item = getItem(position);
 
         //Set the description for this row
-        reminder.setText(item.getmReminderText());
-        timeStamp.setText(item.getmReminderTimeStamp());
+        holder.reminder.setText(item.getmReminderText());
+        holder.timeStamp.setText(item.getmReminderTimeStamp());
 
         return row;
     }
 
 
+    static class ReminderHolder {
+        TextView reminder;
+        TextView timeStamp;
+
+    }
+
 }
+
 

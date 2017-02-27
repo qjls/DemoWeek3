@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class Reminder {
 
-private String mReminderText;
+    private String mReminderText;
     private String mReminderTimeStamp;
 
 
@@ -20,6 +20,8 @@ private String mReminderText;
         this.mReminderTimeStamp = sdf.format(new Date());
 
     }
+
+    //getters and setters
 
     public String getmReminderText() {
         return mReminderText;
@@ -39,7 +41,7 @@ private String mReminderText;
 
     @Override
     public String toString() {
-        return  mReminderText;
+        return mReminderText;
     }
 
 
